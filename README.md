@@ -1,31 +1,10 @@
 # nbaplayerclustering
-Clustering NBA Players Based on Offensive Advanced Stats
+Clustering NBA Players Based on Advanced Stats from Basketball-Reference.com
 
-Summary of the code:
-1. Import relevant libraries: numpy, urllib.request, bs4, pandas
+The goal of any player clustering algorithm is to figure out how players and their approach to the game relate to each other. In other words, if you consider a particular player, who are the other players who play similarly to them? If you take, for example, LeBron James, which player approaches the game most similarly to him? The short answer is not many; it's Lebron. But there are players who are skilled scorers, passers, and defenders, and they will be the ones who compare best to LeBron.
 
-2. Scrape web data from Basketball-Reference.com to get advanced stats for 2018-19 season
+To be clear, this isn't simply about comparing similar play styles, although it is that too. A player like Andre Iguodala approaches the game of basketball almost identically to LeBron: he's a decent scorer, decent passer, decent rebounder, and a great defender. The problem is he's only relatively "decent" at those things while LeBron excels at all of them. So Iguodala would compare favorably to LeBron but still might not be the best comp. On the other hand, you might have someone like Kevin Durant, whose game has aspects that are a bit different than LeBron's (Durant's a better shooter, for one) but because he also adds similar high value, he might comp better than someone like Iguodala, who, again, has an almost identical style but is not as valuable as a player overall. What this player cluster algorithm distills down to is this: it finds players who have similar styles AND similar value.
 
-3. Get headers and rows for DataFrame
+Advanced metrics considered in this algorithm: true shooting %, three point attempt rate, free throw rate, o-rebound %, assist %, turnover %, usage %, steal %, block %, defensive box plus/minus, and DRAYMOND, which is FiveThirtyEight's proprietary metric for measuring the ability to disrupt opponents' shots without blocking them, a crucial skill that's absent from standard box score info and even many advanced stats. Position and age are also considered, primarily to give the algorithm a base idea of the physical build and energy level of players.
 
-4. Initialize DataFrame with the above data, and then pre-process the data
-
-5. Keep only relevant columns for analysis: ['Player', 'TS%', '3PAr', 'FTr', 'ORB%', 'AST%', 'TOV%', 'USG%']
-  a. Convert DataFrame into matrix
-
-6. Import scale from sklearn.preprocessing, and scale the data
-
-7. Import PCA from sklearn.decomposition, and use PCA (Principal Component Analysis) to reduce dimensionality
-  a. Reduce the data to 3 dimensions, which explain 62.422% of the variance.
-
-8. Import KMeans from sklearn.cluster
-
-9. Collect the statistics of all players and average them within each cluster
-
-10. Create a DataFrame for all the clusters and their averages with their PCA1, PCA2, PCA3 data
-
-11. Graph clusters in 3D with matplotlib.pyplot and mplot3d for better visualization
-
-12. Take player name (input from user) and find their three closest L2-norm players by PCA1, PCA2, PCA3
-
-13. Create DataFrame for comp players and rank them according to their similarity (L2-norm difference) to the subject player
+The algorithm scrapes its data from basketball-reference.com and also directly imports its DRAYMOND data from FiveThirtyEight. Because the resulting data is highly dimensional (13 dimensions), the algorithm employs PCA to pare it down to three dimensions which explain 64.23% of the variance in the original data. Next, KMeans is used to cluster the reduced-dimensional data into five clusters, chosen to represent the five standard positional groups in the NBA. LDA is then employed to reduce the three-dimensional, five-cluster data down to two dimensions along clustered lines (targets). Finally, KMeans clustering is applied to the data once more (seven clusters, chosen by elbow method). The data is then graphed and clusters are identified.
